@@ -82,7 +82,9 @@ body {
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
+  color: #30272A;
+  font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  line-height: 1.6;
   /* background: linear-gradient(
       to bottom,
       transparent,
@@ -127,4 +129,347 @@ a {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-fill-color: transparent;
+}
+
+
+/* Switchable campus themes: palette primitives -> semantic colors -> components. */
+:root {
+  --campus-blue-100: oklch(95% 0.016 260);
+  --campus-blue-200: oklch(90% 0.025 260);
+  --campus-blue-500: oklch(51% 0.052 267);
+  --campus-blue-600: oklch(45% 0.055 267);
+  --campus-navy-800: oklch(35% 0.041 267);
+  --campus-navy-900: oklch(29% 0.039 267);
+  --campus-paper: oklch(98% 0.009 90);
+  --campus-lavender: oklch(94% 0.018 310);
+}
+
+html[data-theme='pastel'] {
+  color-scheme: light;
+  --ui-page: var(--campus-blue-100);
+  --ui-surface: var(--campus-paper);
+  --ui-accent: var(--campus-blue-500);
+  --ui-accent-hover: var(--campus-blue-600);
+  --ui-text: var(--campus-navy-900);
+  --ui-muted: var(--campus-navy-800);
+  --ui-line: oklch(82% 0.025 265);
+  --ui-selected: var(--campus-lavender);
+  --ui-header-surface: var(--ui-surface);
+  --ui-control-surface: var(--ui-surface);
+}
+
+html[data-theme='pastel'] body,
+html[data-theme='pastel'] .app-shell,
+html[data-theme='pastel'] .app-content,
+html[data-theme='pastel'] .app-main {
+  color: var(--ui-text);
+  background-color: var(--ui-page);
+}
+
+html[data-theme='pastel'] .app-header {
+  background: var(--ui-header-surface);
+  border-color: var(--ui-line);
+  box-shadow: 0 3px 12px oklch(35% 0.04 267 / 0.05);
+}
+
+html[data-theme='pastel'] .app-brand-mark {
+  color: var(--ui-surface);
+  background: var(--ui-accent);
+  border-radius: 5px 13px 5px 13px;
+}
+
+html[data-theme='pastel'] .header-title {
+  color: var(--ui-text);
+  font-family: STSong, 'Songti SC', SimSun, serif;
+  letter-spacing: 0.06em;
+}
+
+html[data-theme='pastel'] .app-header .header-subtitle,
+html[data-theme='pastel'] .app-header > div > span {
+  color: var(--ui-muted);
+}
+
+html[data-theme='pastel'] .app-header .theme-toggle,
+html[data-theme='pastel'] .app-header button[aria-label='新建对话'],
+html[data-theme='pastel'] .app-header button[aria-label='打开会话列表'] {
+  color: var(--ui-accent);
+  background: var(--ui-control-surface);
+  border: 1px solid var(--ui-line);
+}
+
+html[data-theme='pastel'] .app-header .theme-toggle:hover,
+html[data-theme='pastel'] .app-header button[aria-label='新建对话']:hover,
+html[data-theme='pastel'] .app-header button[aria-label='打开会话列表']:hover {
+  color: var(--ui-accent-hover);
+  background: var(--campus-blue-200);
+  border-color: var(--ui-accent);
+}
+
+html[data-theme='pastel'] .app-header button:focus-visible,
+html[data-theme='pastel'] .app-sidebar button:focus-visible,
+html[data-theme='pastel'] .schedule-dialog button:focus-visible,
+html[data-theme='pastel'] .chat-send:focus-visible {
+  outline-color: var(--ui-accent);
+}
+
+html[data-theme='pastel'] .schedule-trigger {
+  color: var(--ui-surface);
+  background: var(--ui-accent);
+  border-color: var(--ui-accent);
+  border-radius: 4px 12px 4px 12px;
+}
+
+html[data-theme='pastel'] .schedule-trigger:hover {
+  background: var(--ui-accent-hover);
+}
+
+html[data-theme='pastel'] .schedule-trigger:active {
+  background: var(--campus-navy-800);
+}
+
+html[data-theme='pastel'] .schedule-trigger span[aria-hidden='true'] {
+  color: var(--ui-accent);
+  background: var(--ui-surface);
+}
+
+html[data-theme='pastel'] .app-sidebar {
+  color: var(--ui-text);
+  background: var(--ui-surface);
+  border-color: var(--ui-line);
+}
+
+html[data-theme='pastel'] .app-sidebar > div,
+html[data-theme='pastel'] .sidebar-item,
+html[data-theme='pastel'] .sidebar-item svg,
+html[data-theme='pastel'] .sidebar-footer p {
+  color: var(--ui-muted);
+}
+
+html[data-theme='pastel'] .sidebar-new-chat {
+  color: var(--ui-accent);
+  background: var(--ui-surface);
+  border-color: var(--ui-line);
+  border-radius: 4px 12px 4px 12px;
+}
+
+html[data-theme='pastel'] .sidebar-new-chat:hover,
+html[data-theme='pastel'] .sidebar-item:hover,
+html[data-theme='pastel'] .sidebar-item:hover svg {
+  color: var(--ui-accent-hover);
+  background: var(--campus-blue-100);
+  border-color: var(--ui-accent);
+}
+
+html[data-theme='pastel'] .sidebar-item[aria-current='page'],
+html[data-theme='pastel'] .sidebar-item[aria-current='page'] svg {
+  color: var(--ui-accent-hover);
+  background: var(--ui-selected);
+}
+
+html[data-theme='pastel'] .sidebar-footer {
+  border-color: var(--ui-line);
+}
+
+html[data-theme='pastel'] .answer-bubble,
+html[data-theme='pastel'] .question-bubble {
+  color: var(--ui-text);
+  border: 1px solid var(--ui-line);
+  box-shadow: 2px 3px 0 oklch(75% 0.026 265 / 0.28);
+}
+
+html[data-theme='pastel'] .answer-bubble {
+  background: var(--ui-surface);
+  border-radius: 3px 15px 15px 15px;
+}
+
+html[data-theme='pastel'] .question-bubble {
+  background: var(--campus-blue-200);
+  border-radius: 15px 3px 15px 15px;
+}
+
+html[data-theme='pastel'] .answer-bubble a,
+html[data-theme='pastel'] .answer-bubble button {
+  color: var(--ui-accent-hover);
+}
+
+html[data-theme='pastel'] .chat-composer-inner {
+  background: var(--ui-surface);
+  border-color: var(--ui-line);
+  border-radius: 5px 16px 5px 16px;
+  box-shadow: 4px 6px 0 oklch(70% 0.027 265 / 0.18), 0 8px 28px oklch(35% 0.04 267 / 0.08);
+}
+
+html[data-theme='pastel'] .chat-composer-inner:focus-within {
+  border-color: var(--ui-accent);
+}
+
+html[data-theme='pastel'] .chat-textarea {
+  color: var(--ui-text);
+  background: transparent;
+}
+
+html[data-theme='pastel'] .chat-textarea::placeholder {
+  color: var(--ui-muted);
+  opacity: 1;
+}
+
+html[data-theme='pastel'] .chat-send {
+  color: var(--ui-accent);
+}
+
+html[data-theme='pastel'] .chat-send:hover,
+html[data-theme='pastel'] .chat-send:active {
+  color: var(--ui-accent-hover);
+  background: var(--campus-blue-200);
+}
+
+html[data-theme='pastel'] .chat-composer [class*='count'] {
+  color: var(--ui-muted);
+  background: var(--campus-blue-100);
+}
+
+html[data-theme='pastel'] .schedule-dialog {
+  color: var(--ui-text);
+  background: var(--ui-surface);
+  border-color: var(--ui-line);
+  border-radius: 6px 20px 6px 20px;
+}
+
+html[data-theme='pastel'] .schedule-dialog::backdrop {
+  background: oklch(29% 0.039 267 / 0.4);
+}
+
+html[data-theme='pastel'] .schedule-dialog h2,
+html[data-theme='pastel'] .schedule-dialog h3 {
+  color: var(--ui-text);
+  font-family: STSong, 'Songti SC', SimSun, serif;
+}
+
+html[data-theme='pastel'] .schedule-dialog p,
+html[data-theme='pastel'] .schedule-dialog h3,
+html[data-theme='pastel'] .schedule-dialog button,
+html[data-theme='pastel'] .schedule-dialog input,
+html[data-theme='pastel'] .schedule-dialog select {
+  color: var(--ui-muted);
+}
+
+html[data-theme='pastel'] .schedule-dialog input,
+html[data-theme='pastel'] .schedule-dialog select {
+  background: var(--ui-surface);
+  border-color: var(--ui-line);
+  --tw-ring-color: oklch(51% 0.052 267 / 0.22);
+}
+
+html[data-theme='pastel'] .schedule-dialog input:hover,
+html[data-theme='pastel'] .schedule-dialog select:hover,
+html[data-theme='pastel'] .schedule-dialog input:focus,
+html[data-theme='pastel'] .schedule-dialog select:focus {
+  border-color: var(--ui-accent);
+}
+
+html[data-theme='pastel'] .schedule-dialog button {
+  border-color: var(--ui-line);
+}
+
+html[data-theme='pastel'] .schedule-dialog button:hover {
+  color: var(--ui-accent-hover);
+  background: var(--campus-blue-100);
+}
+
+html[data-theme='pastel'] .schedule-dialog button[type='submit'] {
+  color: var(--ui-surface);
+  background: var(--ui-accent);
+  border: 1px solid var(--ui-accent);
+  border-radius: 4px 12px 4px 12px;
+}
+
+html[data-theme='pastel'] .schedule-dialog button[type='submit']:hover {
+  color: var(--ui-surface);
+  background: var(--ui-accent-hover);
+}
+
+html[data-theme='pastel'] .schedule-dialog [role='note'] {
+  color: var(--ui-muted);
+  background: var(--campus-blue-100);
+  border-color: var(--ui-line);
+}
+
+html[data-theme='pastel'] .schedule-dialog li,
+html[data-theme='pastel'] .schedule-dialog li > div:last-child {
+  border-color: var(--ui-line);
+}
+
+html[data-theme='pastel'] .schedule-dialog li button:last-child {
+  color: oklch(48% 0.09 5);
+}
+
+@media (max-width: 639px) {
+  html[data-theme='pastel'] .app-header {
+    gap: 6px;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  html[data-theme='pastel'] .app-header > div {
+    gap: 6px;
+  }
+
+  html[data-theme='pastel'] .header-title {
+    font-size: 15px;
+    letter-spacing: 0.02em;
+  }
+
+  html[data-theme='pastel'] .schedule-trigger {
+    gap: 6px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+}
+
+html[data-theme='pastel'] .app-shell[data-view='pastel-welcome'] .app-header {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 30;
+  height: 64px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+html[data-theme='pastel'] .app-shell[data-view='pastel-welcome'] .app-header > div:first-child {
+  visibility: hidden;
+}
+
+html[data-theme='pastel'] .app-shell[data-view='pastel-welcome'] .app-header > div:last-child {
+  margin-left: auto;
+  pointer-events: auto;
+}
+
+html[data-theme='pastel'] .app-shell[data-view='pastel-welcome'] .app-content,
+html[data-theme='pastel'] .app-shell[data-view='pastel-welcome'] .app-main {
+  height: 100dvh;
+}
+
+@media (max-width: 639px) {
+  html[data-theme='pastel'] .app-shell[data-view='pastel-welcome'] .schedule-trigger {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  html[data-theme='pastel'] .app-shell[data-view='pastel-welcome'] .schedule-trigger > span {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme='pastel'] .app-shell *,
+  html[data-theme='pastel'] .app-shell *::before,
+  html[data-theme='pastel'] .app-shell *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -19,9 +19,11 @@ import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
 import Loading from '@/app/components/base/loading'
 import { replaceVarWithValues, userInputsFormToPromptVariables } from '@/utils/prompt'
 import AppUnavailable from '@/app/components/app-unavailable'
-import { API_KEY, APP_ID, APP_INFO, isShowPrompt, promptTemplate } from '@/config'
+import { API_KEY, APP_ID, APP_INFO, IS_DEMO, isShowPrompt, promptTemplate } from '@/config'
 import type { Annotation as AnnotationType } from '@/types/log'
 import { addFileInfos, sortAgentSorts } from '@/utils/tools'
+import { createDemoReply, DEMO_SUGGESTIONS, getDemoChatList, getDemoConversations, saveDemoChatList } from '@/app/components/demo/demo-service'
+import { useUITheme } from '@/app/components/theme/theme-context'
 
 export interface IMainProps {
   params: any
@@ -29,9 +31,10 @@ export interface IMainProps {
 
 const Main: FC<IMainProps> = () => {
   const { t } = useTranslation()
+  const { theme } = useUITheme()
   const media = useBreakpoints()
   const isMobile = media === MediaType.mobile
-  const hasSetAppConfig = APP_ID && API_KEY
+  const hasSetAppConfig = IS_DEMO || Boolean(APP_ID && API_KEY)
 
   /*
   * app info
@@ -97,6 +100,7 @@ const Main: FC<IMainProps> = () => {
 
     return isChatStarted
   })()
+  const isPastelWelcome = theme === 'pastel' && !hasSetInputs
 
   const conversationName = currConversationInfo?.name || t('app.chat.newChatDefaultName') as string
   const conversationIntroduction = currConversationInfo?.introduction || ''
@@ -126,6 +130,10 @@ const Main: FC<IMainProps> = () => {
 
     // update chat list of current conversation
     if (!isNewConversation && !conversationIdChangeBecauseOfNew && !isResponding) {
+      if (IS_DEMO) {
+        setChatList(getDemoChatList(currConversationId))
+        return
+      }
       fetchChatList(currConversationId).then((res: any) => {
         const { data } = res
         const newChatList: ChatItem[] = generateNewChatListWithOpenStatement(notSyncToStateIntroduction, notSyncToStateInputs)
@@ -226,6 +234,28 @@ const Main: FC<IMainProps> = () => {
       setAppUnavailable(true)
       return
     }
+    if (IS_DEMO) {
+      const introduction = '你好，我是智汇百晓生。当前为界面演示，正式答复将在接入 Dify 后生成。'
+      setLocaleOnClient(APP_INFO.default_language, true)
+      setNewConversationInfo({
+        name: t('app.chat.newChatDefaultName'),
+        introduction,
+        suggested_questions: DEMO_SUGGESTIONS,
+      })
+      setPromptConfig({ prompt_template: promptTemplate, prompt_variables: [] })
+      setConversationList([
+        {
+          id: '-1',
+          name: t('app.chat.newChatDefaultName'),
+          inputs: {},
+          introduction,
+          suggested_questions: DEMO_SUGGESTIONS,
+        },
+        ...getDemoConversations(),
+      ])
+      setInited(true)
+      return
+    }
     (async () => {
       try {
         const [conversationData, appParams] = await Promise.all([fetchConversations(), fetchAppParams()])
@@ -307,7 +337,7 @@ const Main: FC<IMainProps> = () => {
     let emptyRequiredInput = false
     promptConfig.prompt_variables.forEach((item) => {
       if (item.required && !currInputs[item.key])
-        emptyRequiredInput = true
+      { emptyRequiredInput = true }
     })
 
     if (emptyRequiredInput) {
@@ -361,6 +391,63 @@ const Main: FC<IMainProps> = () => {
       notify({ type: 'info', message: t('app.errorMessage.waitForResponse') })
       return
     }
+    if (IS_DEMO) {
+      const requestConversationId = getCurrConversationId() || '-1'
+      const questionId = `demo-question-${Date.now()}`
+      const answerId = `demo-answer-${Date.now()}`
+      const placeholderId = `demo-placeholder-${Date.now()}`
+      const originalChatList = getChatList()
+      const question: ChatItem = { id: questionId, content: message, isAnswer: false }
+      setChatList([
+        ...originalChatList,
+        question,
+        { id: placeholderId, content: '', isAnswer: true },
+      ])
+      setRespondingTrue()
+      try {
+        const content = await createDemoReply(message)
+        const answer: ChatItem = {
+          id: answerId,
+          content,
+          isAnswer: true,
+          feedbackDisabled: true,
+        }
+        const nextChatList = [...originalChatList, question, answer]
+        if (getCurrConversationId() === requestConversationId) { setChatList(nextChatList) }
+
+        let conversationId = requestConversationId
+        if (requestConversationId === '-1') {
+          conversationId = `demo-local-${Date.now()}`
+          const newConversation: ConversationItem = {
+            id: conversationId,
+            name: message.length > 18 ? `${message.slice(0, 18)}…` : message,
+            inputs: {},
+            introduction: conversationIntroduction,
+            suggested_questions: DEMO_SUGGESTIONS,
+          }
+          setConversationList(produce(conversationList, (draft) => {
+            const newIndex = draft.findIndex(item => item.id === '-1')
+            if (newIndex >= 0) { draft.splice(newIndex, 1) }
+            draft.unshift(newConversation)
+          }))
+          setExistConversationInfo({
+            name: newConversation.name,
+            introduction: conversationIntroduction,
+            suggested_questions: DEMO_SUGGESTIONS,
+          })
+          resetNewConversationInputs()
+          setChatNotStarted()
+          setConversationIdChangeBecauseOfNew(false)
+          setCurrConversationId(conversationId, APP_ID, false)
+        }
+        saveDemoChatList(conversationId, nextChatList)
+      }
+      finally {
+        setRespondingFalse()
+      }
+      return
+    }
+
     const toServerInputs: Record<string, any> = {}
     if (currInputs) {
       Object.keys(currInputs).forEach((key) => {
@@ -637,7 +724,7 @@ const Main: FC<IMainProps> = () => {
   }
 
   const renderSidebar = () => {
-    if (!APP_ID || !APP_INFO || !promptConfig) { return null }
+    if ((!IS_DEMO && !APP_ID) || !APP_INFO || !promptConfig) { return null }
     return (
       <Sidebar
         list={conversationList}
@@ -650,28 +737,36 @@ const Main: FC<IMainProps> = () => {
 
   if (appUnavailable) { return <AppUnavailable isUnknownReason={isUnknownReason} errMessage={!hasSetAppConfig ? 'Please set APP_ID and API_KEY in config/index.tsx' : ''} /> }
 
-  if (!APP_ID || !APP_INFO || !promptConfig) { return <Loading type='app' /> }
+  if ((!IS_DEMO && !APP_ID) || !APP_INFO || !promptConfig) { return <Loading type='app' /> }
 
   return (
-    <div className='bg-gray-100'>
+    <div
+      className="app-shell h-[100dvh] overflow-hidden bg-[#F8F6F6]"
+      data-theme={theme}
+      data-view={isPastelWelcome ? 'pastel-welcome' : 'chat'}
+    >
       <Header
         title={APP_INFO.title}
         isMobile={isMobile}
         onShowSideBar={showSidebar}
         onCreateNewChat={() => handleConversationIdChange('-1')}
       />
-      <div className="flex rounded-t-2xl bg-white overflow-hidden">
-        {/* sidebar */}
-        {!isMobile && renderSidebar()}
-        {isMobile && isShowSidebar && (
-          <div className='fixed inset-0 z-50' style={{ backgroundColor: 'rgba(35, 56, 118, 0.2)' }} onClick={hideSidebar} >
-            <div className='inline-block' onClick={e => e.stopPropagation()}>
+      <div className="app-content flex overflow-hidden bg-[#FFFDFC]">
+        {!isMobile && !isPastelWelcome && renderSidebar()}
+        {isMobile && !isPastelWelcome && isShowSidebar && (
+          <div className="fixed inset-0 z-40 bg-[#251C1F]/45" onClick={hideSidebar}>
+            <div className="inline-block" onClick={event => event.stopPropagation()}>
               {renderSidebar()}
             </div>
+            <button
+              type="button"
+              onClick={hideSidebar}
+              className="absolute right-1 top-3 min-h-11 cursor-pointer rounded-lg px-2 text-sm font-medium text-[#FFFDFC] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#FFFDFC]"
+              aria-label="关闭会话列表"
+            >关闭</button>
           </div>
         )}
-        {/* main */}
-        <div className='flex-grow flex flex-col h-[calc(100vh_-_3rem)] overflow-y-auto'>
+        <main className="app-main h-[calc(100dvh_-_4rem)] min-w-0 flex-grow flex-col overflow-y-auto pc:h-[calc(100dvh_-_4.5rem)]">
           <ConfigSence
             conversationName={conversationName}
             hasSetInputs={hasSetInputs}
@@ -682,23 +777,22 @@ const Main: FC<IMainProps> = () => {
             canEditInputs={canEditInputs}
             savedInputs={currInputs as Record<string, any>}
             onInputsChange={setCurrInputs}
-          ></ConfigSence>
-
-          {
-            hasSetInputs && (
-              <div className='relative grow pc:w-[794px] max-w-full mobile:w-full pb-[180px] mx-auto mb-3.5' ref={chatListDomRef}>
-                <Chat
-                  chatList={chatList}
-                  onSend={handleSend}
-                  onFeedback={handleFeedback}
-                  isResponding={isResponding}
-                  checkCanSend={checkCanSend}
-                  visionConfig={visionConfig}
-                  fileConfig={fileConfig}
-                />
-              </div>)
-          }
-        </div>
+          />
+          {hasSetInputs && (
+            <div className="relative mx-auto mb-3.5 w-full max-w-full grow pb-[180px] pc:w-[794px]" ref={chatListDomRef}>
+              <Chat
+                chatList={chatList}
+                feedbackDisabled={IS_DEMO}
+                onSend={handleSend}
+                onFeedback={handleFeedback}
+                isResponding={isResponding}
+                checkCanSend={checkCanSend}
+                visionConfig={visionConfig}
+                fileConfig={fileConfig}
+              />
+            </div>
+          )}
+        </main>
       </div>
     </div>
   )
