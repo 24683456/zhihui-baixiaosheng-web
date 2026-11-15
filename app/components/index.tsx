@@ -40,6 +40,7 @@ const Main: FC<IMainProps> = () => {
   * app info
   */
   const [appUnavailable, setAppUnavailable] = useState<boolean>(false)
+  const [appErrorMessage, setAppErrorMessage] = useState<string>('')
   const [isUnknownReason, setIsUnknownReason] = useState<boolean>(false)
   const [promptConfig, setPromptConfig] = useState<PromptConfig | null>(null)
   const [inited, setInited] = useState<boolean>(false)
@@ -296,7 +297,10 @@ const Main: FC<IMainProps> = () => {
         setVisionConfig({
           ...file_upload?.image,
           enabled: !!(outerFileUploadEnabled && file_upload?.image?.enabled),
-          image_file_size_limit: system_parameters?.system_parameters || 0,
+          number_limits: file_upload?.number_limits ?? 2,
+          detail: file_upload?.image?.detail ?? Resolution.low,
+          transfer_methods: file_upload?.allowed_file_upload_methods ?? [TransferMethod.local_file],
+          image_file_size_limit: system_parameters?.image_file_size_limit ?? 0,
         })
         setFileConfig({
           enabled: outerFileUploadEnabled,
@@ -317,6 +321,8 @@ const Main: FC<IMainProps> = () => {
           setAppUnavailable(true)
         }
         else {
+          if (e?.message?.toString().includes('401')) { setAppErrorMessage('Dify 鉴权失败，请检查 API Key 及 Agent 的 API 访问权限。') }
+          else { setAppErrorMessage('Dify 连接失败，请检查网络、API 地址和应用配置后重试。') }
           setIsUnknownReason(true)
           setAppUnavailable(true)
         }
@@ -548,22 +554,32 @@ const Main: FC<IMainProps> = () => {
         })
       },
       async onCompleted(hasError?: boolean) {
-        if (hasError) { return }
-
-        if (getConversationIdChangeBecauseOfNew()) {
-          const { data: allConversations }: any = await fetchConversations()
-          const newItem: any = await generationConversationName(allConversations[0].id)
-
-          const newAllConversations = produce(allConversations, (draft: any) => {
-            draft[0].name = newItem.name
-          })
-          setConversationList(newAllConversations as any)
+        if (hasError) {
+          setRespondingFalse()
+          return
         }
-        setConversationIdChangeBecauseOfNew(false)
-        resetNewConversationInputs()
-        setChatNotStarted()
-        setCurrConversationId(tempNewConversationId, APP_ID, true)
-        setRespondingFalse()
+
+        try {
+          if (getConversationIdChangeBecauseOfNew()) {
+            const { data: allConversations }: any = await fetchConversations()
+            const newItem: any = await generationConversationName(allConversations[0].id)
+
+            const newAllConversations = produce(allConversations, (draft: any) => {
+              draft[0].name = newItem.name
+            })
+            setConversationList(newAllConversations as any)
+          }
+          setCurrConversationId(tempNewConversationId, APP_ID, true)
+        }
+        catch {
+          Toast.notify({ type: 'error', message: '回答已结束，但会话信息更新失败，请刷新后重试。' })
+        }
+        finally {
+          setConversationIdChangeBecauseOfNew(false)
+          resetNewConversationInputs()
+          setChatNotStarted()
+          setRespondingFalse()
+        }
       },
       onFile(file) {
         const lastThought = responseItem.agent_thoughts?.[responseItem.agent_thoughts?.length - 1]
@@ -737,7 +753,7 @@ const Main: FC<IMainProps> = () => {
     )
   }
 
-  if (appUnavailable) { return <AppUnavailable isUnknownReason={isUnknownReason} errMessage={!hasSetAppConfig ? 'Please set APP_ID and API_KEY in config/index.tsx' : ''} /> }
+  if (appUnavailable) { return <AppUnavailable isUnknownReason={isUnknownReason} errMessage={appErrorMessage || (!hasSetAppConfig ? 'Please set APP_ID and API_KEY in config/index.tsx' : '')} /> }
 
   if ((!IS_DEMO && !APP_ID) || !APP_INFO || !promptConfig) { return <Loading type='app' /> }
 

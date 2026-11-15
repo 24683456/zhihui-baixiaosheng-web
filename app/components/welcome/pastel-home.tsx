@@ -25,10 +25,10 @@ function ReferenceCrop({ className }: { className: string }) {
   )
 }
 
-const shortcuts = [
+const shortcuts: Array<{ label: string, query: string, directChat?: boolean }> = [
   { label: '查询政策', query: '政策' },
   { label: '办事指引', query: '校园办事流程' },
-  { label: '随便聊聊', query: '' },
+  { label: '随便聊聊', query: '', directChat: true },
 ]
 
 export default function PastelHome({ onSearch, onStartChat }: PastelHomeProps) {
@@ -68,7 +68,11 @@ export default function PastelHome({ onSearch, onStartChat }: PastelHomeProps) {
 
       <div className={styles.shortcuts} aria-label="快捷问题">
         {shortcuts.map(item => (
-          <button key={item.label} type="button" onClick={() => onSearch(item.query)}>
+          <button
+            key={item.label}
+            type="button"
+            onClick={() => (item.directChat ? onStartChat() : onSearch(item.query))}
+          >
             {item.label}
           </button>
         ))}
@@ -107,7 +111,7 @@ export default function PastelHome({ onSearch, onStartChat }: PastelHomeProps) {
           </div>
           {showGuide && (
             <p className={styles.guide} role="status">
-              输入关键词后按 Enter 检索；点右下角可切换为直接问答。快捷标签也会打开对应档案。
+              输入关键词后按 Enter 检索；点右下角可切换为直接问答。快捷标签可打开对应档案，也可直接进入问答。
             </p>
           )}
         </form>
