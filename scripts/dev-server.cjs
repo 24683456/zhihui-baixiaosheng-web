@@ -18,7 +18,8 @@ for (let index = 2; index < process.argv.length; index += 1) {
   }
 }
 
-const child = spawn(process.execPath, [nextBin, 'dev', ...forwardedArgs], {
+const systemCaArgs = process.allowedNodeEnvironmentFlags.has('--use-system-ca') ? ['--use-system-ca'] : []
+const child = spawn(process.execPath, [...systemCaArgs, nextBin, 'dev', ...forwardedArgs], {
   cwd: root,
   env: process.env,
   stdio: 'inherit',

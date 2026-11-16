@@ -151,15 +151,10 @@ const Answer: FC<IAnswerProps> = ({
     return list.filter(file => file.type === 'image' && file.belongs_to === 'assistant')
   }
 
-  const agentModeAnswer = (
+  const agentActivity = (
     <div>
       {agent_thoughts?.map((item, index) => (
-        <div key={index}>
-          {item.thought && (
-            <StreamdownMarkdown content={item.thought} />
-          )}
-          {/* {item.tool} */}
-          {/* perhaps not use tool */}
+        <div key={item.id || index}>
           {!!item.tool && (
             <Thought
               thought={item}
@@ -193,17 +188,18 @@ const Answer: FC<IAnswerProps> = ({
               {workflowProcess && (
                 <WorkflowProcess data={workflowProcess} hideInfo />
               )}
-              {(isResponding && (isAgentMode ? (!content && (agent_thoughts || []).filter(item => !!item.thought || !!item.tool).length === 0) : !content))
+              {(isResponding && !content && !(agent_thoughts || []).some(item => !!item.tool))
                 ? (
                   <div className="flex items-center justify-center w-6 h-5">
                     <LoadingAnim type="text" />
                   </div>
                 )
-                : (isAgentMode
-                  ? agentModeAnswer
-                  : (
+                : (
+                  <>
+                    {isAgentMode && agentActivity}
                     <StreamdownMarkdown content={content} />
-                  ))}
+                  </>
+                )}
               {suggestedQuestions.length > 0 && (
                 <div className="mt-3">
                   <div className="flex gap-1 mt-1 flex-wrap">

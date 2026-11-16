@@ -13,7 +13,7 @@ export function getDemoConversations(): ConversationItem[] {
     id: DEMO_CONVERSATION_ID,
     name: '校园咨询界面示例',
     inputs: {},
-    introduction: '你好，我是智汇百晓生。当前为界面演示，正式答复将在接入 Dify 后生成。',
+    introduction: '你好，我是郑大百晓生。当前为界面演示，正式答复将在接入 Dify 后生成。',
     suggested_questions: DEMO_SUGGESTIONS,
   }]
 }
@@ -43,7 +43,7 @@ export function getDemoChatList(conversationId: string): ChatItem[] {
     },
     {
       id: 'demo-answer',
-      content: '这是**前端演示内容**，用于展示校园问答界面，不是校园政策的正式答复。\n\n接入 Dify 后，智能体将根据已配置的校园知识库和工作流回应此类问题，并提供相应的办事指引。',
+      content: '这是**前端界面演示**，校园回答仅作示例，不是校园政策的正式答复。\n\n接入 Dify 后，智能体将根据已配置的校园知识库和工作流回应此类问题，并提供相应的办事指引。',
       isAnswer: true,
       feedbackDisabled: true,
       suggestedQuestions: DEMO_SUGGESTIONS.slice(1),

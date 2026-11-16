@@ -6,9 +6,9 @@ export const API_URL = process.env.NEXT_PUBLIC_API_URL?.trim() || ''
 export const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
   || (process.env.NEXT_PUBLIC_DEMO_MODE !== 'false' && !API_KEY)
 export const APP_INFO: AppInfo = {
-  title: '智汇百晓生',
-  description: '校园政策与生活服务智能助手，让信息查找更清晰，让校园办事更简单。',
-  copyright: '智汇百晓生项目组',
+  title: '郑大百晓生',
+  description: '郑州大学校园政策、办事指引与生活服务智能助手，让信息查找更清晰，让校园办事更简单。',
+  copyright: '郑大百晓生项目组',
   privacy_policy: '',
   default_language: 'zh-Hans',
   disable_session_same_site: false, // set it to true if you want to embed the chatbot in an iframe

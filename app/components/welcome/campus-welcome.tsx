@@ -2,8 +2,6 @@
 
 import { ArrowRightIcon, BookOpenIcon, BuildingLibraryIcon, MapIcon } from '@heroicons/react/24/outline'
 import { IS_DEMO } from '@/config'
-import { useUITheme } from '@/app/components/theme/theme-context'
-import PastelWelcome from './pastel-welcome'
 
 const topics = [
   { icon: BookOpenIcon, title: '政策查询', description: '奖助、教务与校园制度' },
@@ -12,11 +10,8 @@ const topics = [
 ]
 
 export default function CampusWelcome({ onStartChat }: { onStartChat: () => void }) {
-  const { theme } = useUITheme()
-  if (theme === 'pastel') { return <PastelWelcome onStartChat={onStartChat} /> }
-
   return (
-    <section aria-label="智汇百晓生校园助手" className="relative overflow-hidden px-5 pb-10 pt-12 sm:px-10 sm:pb-14 sm:pt-16">
+    <section aria-label="郑大百晓生校园助手" className="relative overflow-hidden px-5 pb-10 pt-12 sm:px-10 sm:pb-14 sm:pt-16">
       <div className="mx-auto max-w-4xl">
         <div className="inline-flex items-center gap-2 rounded-full border border-[#DDC9CD] bg-[#FBF6F7] px-3 py-1.5 text-xs font-medium text-[#6F1D28]">
           <span className={`h-1.5 w-1.5 rounded-full ${IS_DEMO ? 'bg-[#A66B22]' : 'bg-[#36724C]'}`} aria-hidden="true" />
@@ -51,7 +46,7 @@ export default function CampusWelcome({ onStartChat }: { onStartChat: () => void
 
         <div className="mt-10 flex items-start gap-3 rounded-xl bg-[#F5F1F2] px-4 py-3 text-sm leading-6 text-[#675B60]">
           <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#9A7B82]" aria-hidden="true" />
-          <p>{IS_DEMO ? '当前回复均为本地演示，不作为校园政策依据。配置 Dify API Key 后启用真实问答。' : '智能体回答仅供参考，具体政策与办理要求请以学校官方发布为准。'}</p>
+          <p>{IS_DEMO ? '当前为界面演示，校园回答仅作示例，不作为校园政策依据。配置 Dify API Key 后启用真实问答。' : '智能体回答仅供参考，具体政策与办理要求请以学校官方发布为准。'}</p>
         </div>
       </div>
     </section>

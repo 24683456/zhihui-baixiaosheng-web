@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 
+// 主题值保留旧名称，避免浏览器中已保存的选择失效；对外展示已改为 Trianon 手账。
 export type UITheme = 'classic' | 'pastel'
 
 interface ThemeContextValue {

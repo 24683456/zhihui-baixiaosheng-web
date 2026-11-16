@@ -24,6 +24,8 @@ import type { Annotation as AnnotationType } from '@/types/log'
 import { addFileInfos, sortAgentSorts } from '@/utils/tools'
 import { createDemoReply, DEMO_SUGGESTIONS, getDemoChatList, getDemoConversations, saveDemoChatList } from '@/app/components/demo/demo-service'
 import { useUITheme } from '@/app/components/theme/theme-context'
+import ThemeToggle from '@/app/components/theme/ThemeToggle'
+import TrianonShowcase from '@/app/components/trianon-showcase'
 
 export interface IMainProps {
   params: any
@@ -101,8 +103,6 @@ const Main: FC<IMainProps> = () => {
 
     return isChatStarted
   })()
-  const isPastelWelcome = theme === 'pastel' && !hasSetInputs
-
   const conversationName = currConversationInfo?.name || t('app.chat.newChatDefaultName') as string
   const conversationIntroduction = currConversationInfo?.introduction || ''
   const suggestedQuestions = currConversationInfo?.suggested_questions || []
@@ -238,7 +238,7 @@ const Main: FC<IMainProps> = () => {
       return
     }
     if (IS_DEMO) {
-      const introduction = '你好，我是智汇百晓生。当前为界面演示，正式答复将在接入 Dify 后生成。'
+      const introduction = '你好，我是郑大百晓生。当前为界面演示，正式答复将在接入 Dify 后生成。'
       setLocaleOnClient(APP_INFO.default_language, true)
       setNewConversationInfo({
         name: t('app.chat.newChatDefaultName'),
@@ -505,8 +505,6 @@ const Main: FC<IMainProps> = () => {
     const newList = [...getChatList(), questionItem, placeholderAnswerItem]
     setChatList(newList)
 
-    let isAgentMode = false
-
     // answer
     const responseItem: ChatItem = {
       id: `${Date.now()}`,
@@ -526,13 +524,7 @@ const Main: FC<IMainProps> = () => {
         setAbortController(abortController)
       },
       onData: (message: string, isFirstMessage: boolean, { conversationId: newConversationId, messageId, taskId }: any) => {
-        if (!isAgentMode) {
-          responseItem.content = responseItem.content + message
-        }
-        else {
-          const lastThought = responseItem.agent_thoughts?.[responseItem.agent_thoughts?.length - 1]
-          if (lastThought) { lastThought.thought = lastThought.thought + message } // need immer setAutoFreeze
-        }
+        responseItem.content = responseItem.content + message
         if (messageId && !hasSetResponseId) {
           responseItem.id = messageId
           hasSetResponseId = true
@@ -593,7 +585,6 @@ const Main: FC<IMainProps> = () => {
         })
       },
       onThought(thought) {
-        isAgentMode = true
         const response = responseItem as any
         if (thought.message_id && !hasSetResponseId) {
           response.id = thought.message_id
@@ -753,15 +744,31 @@ const Main: FC<IMainProps> = () => {
     )
   }
 
-  if (appUnavailable) { return <AppUnavailable isUnknownReason={isUnknownReason} errMessage={appErrorMessage || (!hasSetAppConfig ? 'Please set APP_ID and API_KEY in config/index.tsx' : '')} /> }
+  if (theme === 'pastel') { return <TrianonShowcase /> }
 
-  if ((!IS_DEMO && !APP_ID) || !APP_INFO || !promptConfig) { return <Loading type='app' /> }
+  if (appUnavailable) {
+    return (
+      <>
+        <AppUnavailable isUnknownReason={isUnknownReason} errMessage={appErrorMessage || (!hasSetAppConfig ? 'Please set APP_ID and API_KEY in config/index.tsx' : '')} />
+        <ThemeToggle />
+      </>
+    )
+  }
+
+  if ((!IS_DEMO && !APP_ID) || !APP_INFO || !promptConfig) {
+    return (
+      <>
+        <Loading type='app' />
+        <ThemeToggle />
+      </>
+    )
+  }
 
   return (
     <div
       className="app-shell h-[100dvh] overflow-hidden bg-[#F8F6F6]"
       data-theme={theme}
-      data-view={isPastelWelcome ? 'pastel-welcome' : 'chat'}
+      data-view="chat"
     >
       <Header
         title={APP_INFO.title}
@@ -770,8 +777,8 @@ const Main: FC<IMainProps> = () => {
         onCreateNewChat={() => handleConversationIdChange('-1')}
       />
       <div className="app-content flex overflow-hidden bg-[#FFFDFC]">
-        {!isMobile && !isPastelWelcome && renderSidebar()}
-        {isMobile && !isPastelWelcome && isShowSidebar && (
+        {!isMobile && renderSidebar()}
+        {isMobile && isShowSidebar && (
           <div className="fixed inset-0 z-40 bg-[#251C1F]/45" onClick={hideSidebar}>
             <div className="inline-block" onClick={event => event.stopPropagation()}>
               {renderSidebar()}
