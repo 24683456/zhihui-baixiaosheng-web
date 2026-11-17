@@ -19,6 +19,7 @@ import FileUploaderInAttachmentWrapper from '@/app/components/base/file-uploader
 import type { FileEntity, FileUpload } from '@/app/components/base/file-uploader-in-attachment/types'
 import { getProcessedFiles } from '@/app/components/base/file-uploader-in-attachment/utils'
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
+import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
 
 export interface IChatProps {
   chatList: ChatItem[]
@@ -54,6 +55,8 @@ const Chat: FC<IChatProps> = ({
   fileConfig,
 }) => {
   const { t } = useTranslation()
+  const media = useBreakpoints()
+  const isMobile = media === MediaType.mobile
   const { notify } = Toast
   const isUseInputMethod = useRef(false)
 
@@ -149,9 +152,9 @@ const Chat: FC<IChatProps> = ({
   }
 
   return (
-    <div className={cn(!feedbackDisabled && 'px-3.5', 'h-full')}>
+    <div className={cn('h-full px-3 sm:px-3.5', feedbackDisabled && 'sm:px-0')}>
       {/* Chat List */}
-      <div className="h-full space-y-[30px]">
+      <div className="h-full space-y-5 sm:space-y-[30px]">
         {chatList.map((item) => {
           if (item.isAnswer) {
             const isLast = item.id === chatList[chatList.length - 1].id
@@ -177,12 +180,12 @@ const Chat: FC<IChatProps> = ({
       </div>
       {
         !isHideSendInput && (
-          <div className='chat-composer fixed bottom-0 left-1/2 z-10 w-full max-w-full -translate-x-1/2 px-3.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-6 tablet:ml-[112px] tablet:w-[794px] pc:ml-[124px] pc:w-[794px]'>
-            <div className='chat-composer-inner max-h-[150px] overflow-y-auto rounded-xl border-[1.5px] border-[#D9CDD1] bg-[#FFFDFC] p-[5.5px] shadow-[0_8px_32px_rgba(63,39,45,0.10)] focus-within:border-[#7A202C]'>
+          <div className='chat-composer fixed bottom-0 left-1/2 z-10 w-full max-w-full -translate-x-1/2 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-3 tablet:ml-[112px] tablet:w-[794px] tablet:px-3.5 tablet:pb-[max(0.75rem,env(safe-area-inset-bottom))] tablet:pt-6 pc:ml-[124px] pc:w-[794px]'>
+            <div className='chat-composer-inner max-h-[132px] overflow-y-auto rounded-xl border-[1.5px] border-[#D9CDD1] bg-[#FFFDFC] p-[5.5px] shadow-[0_8px_32px_rgba(63,39,45,0.10)] focus-within:border-[#7A202C] sm:max-h-[150px]'>
               {
                 visionConfig?.enabled && (
                   <>
-                    <div className='absolute bottom-2 left-2 flex items-center'>
+                    <div className='absolute bottom-[max(0.5rem,env(safe-area-inset-bottom))] left-2 flex items-center'>
                       <ChatImageUploader
                         settings={visionConfig}
                         onUpload={onUpload}
@@ -215,18 +218,18 @@ const Chat: FC<IChatProps> = ({
               }
               <Textarea
                 className={`
-                  chat-textarea block max-h-none w-full resize-none appearance-none px-2 py-3 pr-[84px] text-base leading-6 text-[#40363A] outline-none placeholder:text-[#7B7074]
+                  chat-textarea block max-h-none w-full resize-none appearance-none px-2 py-3 pr-[68px] text-base leading-6 text-[#40363A] outline-none placeholder:text-[#7B7074] sm:pr-[84px]
                   ${visionConfig?.enabled && 'pl-12'}
                 `}
                 aria-label="输入校园咨询问题"
-                placeholder="输入你的校园问题，Enter 发送，Shift + Enter 换行"
+                placeholder={isMobile ? '输入校园问题…' : '输入你的校园问题，Enter 发送，Shift + Enter 换行'}
                 value={query}
                 onChange={handleContentChange}
                 onKeyUp={handleKeyUp}
                 onKeyDown={handleKeyDown}
                 autoSize
               />
-              <div className="absolute bottom-1 right-4 flex h-11 items-center">
+              <div className="absolute bottom-[max(0.25rem,env(safe-area-inset-bottom))] right-4 flex h-11 items-center">
                 <div className={`${s.count} mr-2 hidden h-5 rounded bg-[#F4EFF0] px-2 text-sm leading-5 text-[#6C6166] sm:block`}>{query.trim().length}</div>
                 <Tooltip
                   selector='send-tip'

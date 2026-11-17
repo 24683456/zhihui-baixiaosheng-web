@@ -213,6 +213,22 @@ html[data-theme='pastel'] .theme-egg-toggle:focus-visible {
   outline-color: var(--ui-accent);
 }
 
+/* 手机端把彩蛋主题开关收进顶栏，避免浮层压住输入区与发送键。 */
+@media (max-width: 639px) {
+  .app-header .theme-egg-toggle {
+    position: static;
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    opacity: 0.72;
+    transform: none;
+  }
+
+  .app-header .theme-egg-toggle:hover {
+    opacity: 0.92;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .theme-egg-toggle {
     transition: none;

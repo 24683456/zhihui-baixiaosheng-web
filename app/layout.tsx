@@ -1,8 +1,15 @@
+import type { Viewport } from 'next'
 import { getLocaleOnServer } from '@/i18n/server'
 import { ThemeProvider } from '@/app/components/theme/theme-context'
 
 import './styles/globals.css'
 import './styles/markdown.scss'
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+}
 
 const LocaleLayout = async ({
   children,

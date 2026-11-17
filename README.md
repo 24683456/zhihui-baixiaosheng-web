@@ -31,7 +31,7 @@ NEXT_PUBLIC_API_URL=https://api.dify.ai/v1
 右下角的小本子/酒杯按钮在两种展示之间切换，选择保存在当前浏览器的 `localStorage` 键 `zhihui-baixiaosheng.ui-theme.v1`（内部键名保持不变），刷新后仍会保留。
 
 - **经典酒红问答**：完整的 Dify 使用端。应用参数、会话创建、流式回答、历史记录、反馈和定时任务都在这里工作，真实问答只发生在这里。
-- **Trianon 手账展示**：仅用于界面与交互演示。使用同源 iframe 加载固定入口 `/trianon/index.html#empty`，不共享酒红端的 Header、Sidebar 或 Chat，不请求 Dify，也不包含真实校园政策数据。页面以 1440×900 桌面画布居中等比缩放，窄屏提供“在新标签打开手账展示”的链接；所有校园问答仅作示例，不构成正式政策答复。
+- **Trianon 手账展示**：仅用于界面与交互演示。使用同源 iframe 加载固定入口 `/trianon/index.html#empty`，不共享酒红端的 Header、Sidebar 或 Chat，不请求 Dify，也不包含真实校园政策数据。桌面和平板以 1440×900 画布居中等比完整展示；手机竖屏使用真实屏宽，完整重排中央卡片、入口、输入区与示例对话，并支持纵向滚动；横屏仍完整缩放并提供“在新标签打开手账展示”的链接。所有校园问答仅作示例，不构成正式政策答复。
 
 手账分支在 Dify 故障提示与加载状态之前渲染。Dify 不可用时仍可通过右下角按钮查看纯展示页；从手账切回经典酒红只恢复原有界面，不会新建会话或清空已有历史。两套展示共用同一份会话状态，但只有酒红端发起真实请求。
 
@@ -46,7 +46,7 @@ Trianon 单文件与许可放在 `public/trianon/`。来源、commit、MIT 许�
 ## 主要模块
 
 - `app/components/index.tsx`：酒红端 Dify 主会话逻辑、演示分支与 Trianon 展示分支
-- `app/components/trianon-showcase.tsx`：Trianon 全屏 iframe、居中等比缩放与窄屏入口
+- `app/components/trianon-showcase.tsx`：Trianon 同源 iframe、桌面等比缩放与手机竖屏完整布局
 - `app/components/theme/ThemeToggle.tsx`：右下角“Trianon 手账展示/经典酒红问答”切换按钮
 - `app/components/theme/theme-context.tsx`：展示层主题状态与本地保存
 - `app/components/header.tsx`：酒红端顶部栏、定时任务入口

@@ -173,8 +173,8 @@ const Answer: FC<IAnswerProps> = ({
 
   return (
     <div key={id}>
-      <div className="flex items-start">
-        <div className={`${s.answerIcon} w-10 h-10 shrink-0`}>
+      <div className="flex min-w-0 items-start">
+        <div className={`${s.answerIcon} h-8 w-8 shrink-0 sm:h-10 sm:w-10`} style={{ backgroundSize: 'contain' }}>
           {isResponding
             && (
               <div className={s.typeingIcon}>
@@ -182,9 +182,9 @@ const Answer: FC<IAnswerProps> = ({
               </div>
             )}
         </div>
-        <div className={`${s.answerWrap} max-w-[calc(100%-3rem)]`}>
-          <div className={`${s.answer} relative text-sm text-gray-900`}>
-            <div className={`answer-bubble ml-2 py-3 px-4 bg-gray-100 rounded-tr-2xl rounded-b-2xl ${workflowProcess && 'min-w-[480px]'}`}>
+        <div className={`${s.answerWrap} min-w-0 max-w-[calc(100%-2.5rem)] sm:max-w-[calc(100%-3rem)]`}>
+          <div className={`${s.answer} relative min-w-0 text-sm text-gray-900`}>
+            <div className={`answer-bubble ml-2 max-w-full break-words rounded-tr-2xl rounded-b-2xl bg-gray-100 px-3.5 py-2.5 sm:px-4 sm:py-3 ${workflowProcess && 'sm:min-w-[480px]'}`}>
               {workflowProcess && (
                 <WorkflowProcess data={workflowProcess} hideInfo />
               )}
